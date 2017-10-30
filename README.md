@@ -34,14 +34,12 @@ Config::$COOKIE_DOMAIN = 'nonce.dev';
 ```
 
 3. Let's add the token field to our form:
-```php
+```html
 <form method="post">
-
     ....
     ....
 
     <input type="hidden" name="nonce" value="<?php echo Nonce::create('signup-form'); ?>" />
-
 </form>
 
 ```
@@ -50,12 +48,10 @@ Now the form should appear something like this on the front-end:
 
 ```html
 <form method="post">
-
     ....
     ....
 
     <input type="hidden" name="nonce" value="7ad510a2296535d545615d" />
-    
 </form>
 ```
 
