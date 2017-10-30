@@ -58,7 +58,7 @@ Now the form should appear something like this on the front-end:
 To verify the nonce for this form on submission, we can pass the `nonce` hash to the method `Nonce::verify( String $hash, String $action )`:
 
 ```php
-if ( isset( $_POST['nonce'] ) Nonce::verify( $_POST['nonce'], 'signup-form' ) ) {
+if ( isset( $_POST['nonce'] ) && Nonce::verify( $_POST['nonce'], 'signup-form' ) ) {
     # nonce is valid
 }
 ```
