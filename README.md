@@ -4,8 +4,19 @@ Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate n
 
 ## Install
 
+With composer
+
 ```bash
 composer require "elhardoum/nonce-php:*@dev"
+```
+
+Without composer, download or clone the repo and load the files in the `src/` directory:
+
+```php
+require __DIR__ . '/nonce-php/src/Nonce.php';
+require __DIR__ . '/nonce-php/src/Cookie.php';
+require __DIR__ . '/nonce-php/src/Config.php';
+require __DIR__ . '/nonce-php/src/HashStore.php';
 ```
 
 ## Basic Usage
