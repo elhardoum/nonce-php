@@ -5,7 +5,7 @@ Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate n
 ## Install
 
 ```bash
-composer require elhardoum/nonce-php
+composer require "elhardoum/nonce-php:*@dev"
 ```
 
 ## Basic Usage
@@ -45,6 +45,8 @@ Config::$COOKIE_DOMAIN = 'nonce.dev';
 </form>
 
 ```
+
+To set a custom expiration for the token, pass the number of seconds to the second argument: `Nonce::create('signup-form', 60)`, otherwise `Config::$NONCE_EXPIRE` will be in use.
 
 Now the form should appear something like this on the front-end:
 
