@@ -5,6 +5,16 @@ namespace Nonce;
 use RandomLib\Factory as RandomLibFactory;
 use SecurityLib\Strength;
 
+/**
+  * Fast PHP nonce and CSRF tokens tool
+  *
+  * @author Samuel Elh <samelh.com/contact>
+  * @version 0.1
+  * @link http://github.com/elhardoum/nonce-php
+  * @link https://samelh.com
+  * @license GPL-3.0
+  * @see https://github.com/elhardoum/nonce-php/blob/master/readme.md
+  */
 class Nonce
 {
     private static $verifying;
