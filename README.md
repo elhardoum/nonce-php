@@ -122,7 +122,7 @@ Enter a character limit here. This is important when you are storing hashes via 
 The generated hash becomes very long that we actually need to trim it to get only the first XX characters, when you are storing hashes via browser cookies then this will for sure cause a problem (large headers), so we'll try to store tiny hashes instead, and clip the hash as well while verifying the nonces.
 
 ```php
-static $STORE_CTX_GET = ['Nonce\Cookie', `get'];
+static $STORE_CTX_GET = ['Nonce\Cookie', 'get'];
 ```
 
 A callable function or method that should retrieve us the hashes.
