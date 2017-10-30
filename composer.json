@@ -1,0 +1,12 @@
+{
+    "name": "elhardoum/nonce-php",
+    "authors": [
+        {
+            "name": "elhardoum",
+            "email": "elhardoum@outlook.com"
+        }
+    ],
+    "require": {
+        "ircmaxell/random-lib": "^1.2"
+    }
+}
