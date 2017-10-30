@@ -11,6 +11,7 @@
             "homepage": "https://samelh.com"
         }
     ],
+    "minimum-stability": "stable",
     "require": {
         "php": "^5.4",
         "ircmaxell/random-lib": "^1.2"
