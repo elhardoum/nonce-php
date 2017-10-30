@@ -32,7 +32,7 @@ Config::$SALT = 'wL`i%aQh4e|0Pg`7Nr`v|8cx(wzH>4+B<7GHNO]|1wXQ8XETfx+/ZnSklrr&YK~
 Config::$COOKIE_PATH = '/test/';
 
 // Cookies host: enter your host (domain name)
-Config::$COOKIE_DOMAIN = 'nonce.dev';
+Config::$COOKIE_DOMAIN = 'example.com';
 ```
 
 3. Let's add the token field to our form:

@@ -10,7 +10,7 @@ class Config
     static $TOKEN_HASHER = 'sha512';
     static $NONCE_EXPIRE = 600; // 10 min
     static $COOKIE_PATH = '/';
-    static $COOKIE_DOMAIN = '127.0.0.1';
+    static $COOKIE_DOMAIN = 'example.com';
     static $HASH_NAME_LENGTH = 11;
     static $STORE_CTX_SET = ['Nonce\Cookie', 'set'];
     static $STORE_CTX_GET = ['Nonce\Cookie', 'get'];
