@@ -7,7 +7,7 @@ Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate n
 Using [composer](https://getcomposer.org):
 
 ```bash
-composer require "elhardoum/nonce-php:*@dev"
+composer require elhardoum/nonce-php
 ```
 
 Without composer, download or clone the repo and load the files in the `src/` directory:
