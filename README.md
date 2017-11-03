@@ -183,3 +183,7 @@ Config::$STORE_CTX_DELETE = function($key) use ($redis_client) {
     return $redis_client->del( $key );
 };
 ```
+
+## Tutorial
+
+You can also read our [tutorial on using PHP Nonce](https://samelh.com/blog/2017/10/31/protect-forms-urls-csrf-attacks-php-nonce-tokens/).
