@@ -3,9 +3,10 @@
 namespace spec\Nonce;
 
 use Nonce\Nonce;
+use Nonce\Config;
+use Nonce\HashStore;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Nonce\Config;
 use Predis\Client as PredisClient;
 
 class NonceSpec extends ObjectBehavior
