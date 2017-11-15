@@ -65,7 +65,9 @@ class NonceSpec extends ObjectBehavior
         $nonce = Nonce::create('some-action', 1);
 
         // expire it
-        sleep(1);
+        // sleep(1); // travis-ci didn't work well, therefore HashStore::delete!
+
+        HashStore::delete($nonce);
 
         // verify it
         $this->verify($nonce, 'some-action')->shouldBe(false);
