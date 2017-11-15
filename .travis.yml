@@ -9,6 +9,7 @@ before_install:
   - composer self-update
 
 install:
+  - composer install
   - composer --working-dir=./tests install
 
 script: cd ./tests && vendor/bin/phpspec run -v --format progress
