@@ -16,4 +16,4 @@ install:
   - cd tests
   - composer install
 
-script: cd tests && vendor/bin/phpspec run -v --format progress
+script: vendor/bin/phpspec run -v --format progress
