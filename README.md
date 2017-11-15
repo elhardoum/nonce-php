@@ -2,6 +2,8 @@
 
 Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate nonces easily using browser cookies or a cache driver (or anything else).
 
+[![Build Status](https://travis-ci.org/elhardoum/nonce-php.svg?branch=master)](https://travis-ci.org/elhardoum/nonce-php)
+
 ## Install
 
 Using [composer](https://getcomposer.org):
