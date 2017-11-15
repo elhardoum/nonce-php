@@ -6,11 +6,9 @@ php:
   - '7.0'
 
 before_install:
-  - cd tests
   - composer self-update
 
 install:
-  - cd tests
-  - composer install
+  - composer --working-dir=./tests install
 
-script: vendor/bin/phpspec run -v --format progress
+script: cd ./tests && vendor/bin/phpspec run -v --format progress
