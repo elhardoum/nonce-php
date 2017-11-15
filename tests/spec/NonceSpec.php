@@ -11,14 +11,14 @@ use Predis\Client as PredisClient;
 
 class NonceSpec extends ObjectBehavior
 {
-    private static $redis;
+    // private static $redis;
 
     function it_is_initializable()
     {
         $this->shouldHaveType(Nonce::class);
     }
 
-    function it_is_dump()
+    function it_can_test_nonce_verification()
     {
         $this->verify(
             Nonce::create('signup-form'),
@@ -26,81 +26,71 @@ class NonceSpec extends ObjectBehavior
         )->shouldBe(true);
     }
 
-    private static function setupRedis()
-    {
-        if ( isset(self::$redis) )
-            return;
+    // private static function setupRedis()
+    // {
+    //     if ( isset(self::$redis) )
+    //         return;
 
-        $redis_client = new PredisClient();
+    //     $redis_client = new PredisClient();
 
-        Config::$STORE_CTX_SET = function($key, $value, $expire) use ($redis_client) {
-            $redis_client->set( $key, $value );
-            $redis_client->expire( $key, $expire );
-        };
+    //     Config::$STORE_CTX_SET = function($key, $value, $expire) use ($redis_client) {
+    //         $redis_client->set( $key, $value );
+    //         $redis_client->expire( $key, $expire );
+    //     };
 
-        Config::$STORE_CTX_GET = function($key) use ($redis_client) {
-            return $redis_client->get( $key );
-        };
+    //     Config::$STORE_CTX_GET = function($key) use ($redis_client) {
+    //         return $redis_client->get( $key );
+    //     };
 
-        Config::$STORE_CTX_DELETE = function($key) use ($redis_client) {
-            return $redis_client->del( $key );
-        };
+    //     Config::$STORE_CTX_DELETE = function($key) use ($redis_client) {
+    //         return $redis_client->del( $key );
+    //     };
 
-        self::$redis = 1;
-    }
+    //     self::$redis = 1;
+    // }
 
-    function it_can_test_redis()
-    {
-        self::setupRedis();
+    // function it_can_redis_nonce_hash_store()
+    // {
+    //     self::setupRedis();
 
-        // should be avail for 1 sec
-        $nonce = Nonce::create('some-action-4');
+    //     $nonce = Nonce::create('login-form', 1);
 
-        ob_start(); print_r(HashStore::get( $nonce ) . PHP_EOL);
-    }
+    //     $this->verify($nonce, 'login-form')->shouldBe(true);
+    // }
 
-    function it_can_redis_nonce_hash_store()
-    {
-        self::setupRedis();
+    // function it_can_test_nonce_expiration()
+    // {
+    //     self::setupRedis();
 
-        $nonce = Nonce::create('login-form', 1);
+    //     // should be avail for 1 sec
+    //     $nonce = Nonce::create('some-action', 1);
 
-        $this->verify($nonce, 'login-form')->shouldBe(true);
-    }
+    //     // expire it
+    //     sleep(1);
 
-    function it_can_test_nonce_expiration()
-    {
-        self::setupRedis();
+    //     // verify it
+    //     $this->verify($nonce, 'some-action')->shouldBe(false);
+    // }
 
-        // should be avail for 1 sec
-        $nonce = Nonce::create('some-action', 1);
+    // function it_can_delete_hash()
+    // {
+    //     self::setupRedis();
 
-        // expire it
-        sleep(1);
+    //     $nonce = Nonce::create('some-action-2', 1);
 
-        // verify it
-        $this->verify($nonce, 'some-action')->shouldBe(HashStore::get( $nonce )); // false
-    }
+    //     Nonce::deleteHash($nonce);
 
-    function it_can_delete_hash()
-    {
-        self::setupRedis();
+    //     $this->verify($nonce, 'some-action-2')->shouldBe(false);
+    // }
 
-        $nonce = Nonce::create('some-action-2', 1);
+    // function it_can_delete_action()
+    // {
+    //     self::setupRedis();
 
-        Nonce::deleteHash($nonce);
+    //     $nonce = Nonce::create('some-action-3', 1);
 
-        $this->verify($nonce, 'some-action-2')->shouldBe(false);
-    }
+    //     Nonce::delete('some-action-3');
 
-    function it_can_delete_action()
-    {
-        self::setupRedis();
-
-        $nonce = Nonce::create('some-action-3', 1);
-
-        Nonce::delete('some-action-3');
-
-        $this->verify($nonce, 'some-action-3')->shouldBe(false);
-    }
+    //     $this->verify($nonce, 'some-action-3')->shouldBe(false);
+    // }
 }
