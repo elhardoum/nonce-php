@@ -74,6 +74,7 @@ class NonceSpec extends ObjectBehavior
 
         // should be avail for 1 sec
         $nonce = Nonce::create('some-action', 1);
+        ob_start(); print_r(HashStore::get( $nonce ) . PHP_EOL);
 
         // expire it
         sleep(1);
