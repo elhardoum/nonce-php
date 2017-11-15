@@ -74,13 +74,12 @@ class NonceSpec extends ObjectBehavior
 
         // should be avail for 1 sec
         $nonce = Nonce::create('some-action', 1);
-        ob_start(); print_r(HashStore::get( $nonce ) . PHP_EOL);
 
         // expire it
         sleep(1);
 
         // verify it
-        $this->verify($nonce, 'some-action')->shouldBe(false);
+        $this->verify($nonce, 'some-action')->shouldBe(HashStore::get( $nonce )); // false
     }
 
     function it_can_delete_hash()
