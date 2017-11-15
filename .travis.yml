@@ -5,11 +5,8 @@ php:
   # - '5.6'
   - '7.0'
 
-before_script:
-  - cd tests
-  - rm composer.lock
-
 before_install:
+  - cd tests
   - composer self-update
 
 install:
