@@ -2,3 +2,6 @@ suites:
     default:
         namespace: Nonce
         psr4_prefix: Nonce
+extensions:
+    - PhpSpec\NyanFormattersExtension\Extension
+formatter.name: nyan.cat

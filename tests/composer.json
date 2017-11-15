@@ -1,6 +1,7 @@
 {
     "require": {
-        "phpspec/phpspec": "^2.4"
+        "phpspec/phpspec": "^2.4",
+        "phpspec/nyan-formatters": "^1.0"
     },
     "autoload": {
         "psr-4": {"Nonce\\": "../src/"},
