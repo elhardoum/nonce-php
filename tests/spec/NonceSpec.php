@@ -58,6 +58,17 @@ class NonceSpec extends ObjectBehavior
         $this->verify($nonce, 'login-form')->shouldBe(true);
     }
 
+    function it_can_test_redis()
+    {
+        self::setupRedis();
+
+        // should be avail for 1 sec
+        $nonce = Nonce::create('some-action-4');
+
+        // verify it
+        $this->verify( (int) HashStore::get( $nonce ) )->shouldBe(1);
+    }
+
     function it_can_test_nonce_expiration()
     {
         self::setupRedis();
@@ -66,9 +77,7 @@ class NonceSpec extends ObjectBehavior
         $nonce = Nonce::create('some-action', 1);
 
         // expire it
-        // sleep(1); // travis-ci didn't work well, therefore HashStore::delete!
-
-        HashStore::delete($nonce);
+        sleep(1);
 
         // verify it
         $this->verify($nonce, 'some-action')->shouldBe(false);
