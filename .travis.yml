@@ -5,6 +5,12 @@ php:
   - '5.6'
   - '7.0'
 
+before_script:
+  - cd tests
+
+before_install:
+  - composer self-update
+
 install:
   - cd tests
   - composer install
