@@ -1,0 +1,4 @@
+suites:
+    default:
+        namespace: Nonce
+        psr4_prefix: Nonce
