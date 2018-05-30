@@ -173,9 +173,10 @@ A callable function or method that should delete a given hash from the hash stor
 You can use Redis to store the hashes as it is super fast and efficient, here's a sample case using [`Predis\Client`](https://github.com/nrk/predis) as a Redis PHP client:
 
 ```php
-use Nonce\{Nonce,Config};
+use Nonce\Config;
+use Predis\Client as PredisClient;
 
-$redis_client = new Predis\Client();
+$redis_client = new PredisClient();
 
 Config::$STORE_CTX_SET = function($key, $value, $expire) use ($redis_client) {
     $redis_client->set( $key, $value );
