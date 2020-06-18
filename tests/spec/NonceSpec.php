@@ -48,7 +48,10 @@ class NonceSpec extends ObjectBehavior
     {
         $this->defaultConstruct();
 
-        $CSRF = $_COOKIE[ (new \Nonce\Config\Config)->getConfig('CSRF_COOKIE_NAME') ] ?? null;
+        $config = new \Nonce\Config\Config;
+
+        $CSRF = $_COOKIE[ $config->getConfig('CSRF_COOKIE_NAME') ] ?? null;
+        $CSRF .= $config->getConfig('RANDOM_SALT');
 
         $this->getOrGenerateUserHashToken()->shouldBe( $CSRF );
 

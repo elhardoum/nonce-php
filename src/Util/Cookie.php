@@ -14,14 +14,31 @@ namespace Nonce\Util;
   */
 class Cookie
 {
+    // config context
     private static $config;
+
+    /**
+      * Pass config context to class
+      *
+      * @param \Nonce\Config\Base $config configuration class reference
+      * @return void
+      */
 
     static function loadConfig( \Nonce\Config\Base $config )
     {
         self::$config = $config;
     }
 
-    static function set($name, $value, $expires=null)
+    /**
+      * Set a browser cookie
+      *
+      * @param string $name cookie name
+      * @param string $value cookie value
+      * @param int $expires cookie TTL in seconds
+      * @return void
+      */
+
+    static function set( string $name, string $value, int $expires=0 )
     {
         setcookie(
             $name,
@@ -35,12 +52,26 @@ class Cookie
         $_COOKIE[$name] = $value;
     }
 
-    static function get($name)
+    /**
+      * Retrieve a browser cookie
+      *
+      * @param string $name cookie name
+      * @return mixed cookie value
+      */
+
+    static function get( string $name )
     {
         return isset($_COOKIE[$name]) ? trim($_COOKIE[$name]) : null;  
     }
 
-    static function delete($name)
+    /**
+      * Unset a browser cookie
+      *
+      * @param string $name cookie name to be deleted
+      * @return void
+      */
+
+    static function delete( string $name )
     {
         setcookie(
             $name,

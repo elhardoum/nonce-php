@@ -1,11 +1,3 @@
-
-## Todo
-
- - [ ] update readme
- - [ ] code comments
- - [x] unit tests: cookie, core, redis
- - [ ] tag 0.2, packagist sync
- 
 # Nonce PHP
 
 Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate nonces easily using browser cookies or a cache driver (or anything else).
@@ -20,61 +12,43 @@ Using [composer](https://getcomposer.org):
 composer require elhardoum/nonce-php
 ```
 
-Without composer, download or clone the repo and load the files in the `src/` directory:
-
-```php
-require __DIR__ . '/nonce-php/src/Nonce.php';
-require __DIR__ . '/nonce-php/src/Cookie.php';
-require __DIR__ . '/nonce-php/src/Config.php';
-require __DIR__ . '/nonce-php/src/HashStore.php';
-```
-
 ## Basic Usage
 
-First, you'll want to configure the Nonce class, and you can use `Config` for this:
-
-1. Import the class
+First, import and initialize the nonce utility class:
 
 ```php
-use Nonce\{Nonce,Config};
+// nonce configuration class
+$nonceConfig = new \Nonce\Config\Config;
 
-require __DIR__ . '/vendor/autoload.php';
+// nonce hash storage, use browser cookies
+$nonceStore = new \Nonce\HashStore\Cookie;
+
+// initialize nonce class
+$nonceUtil = new \Nonce\Nonce( $nonceConfig, $nonceStore );
 ```
 
-2. Let's make a basic config to use cookies:
+Then, to create a nonce based on an action name:
 
 ```php
-// Set here a random salt which can be used along with a random string to generate the CSRF token.
-Config::$SALT = 'wL`i%aQh4e|0Pg`7Nr`v|8cx(wzH>4+B<7GHNO]|1wXQ8XETfx+/ZnSklrr&YK~W';
-
-// Set the cookie path ( to which the cookies are saved ).
-// If you run this on the root domain, then set `/`
-// Otherwise if used on a subdirectory, then enter the directory name (e.g /my-custom-site/ for http://example.com/my-custom-site/)
-Config::$COOKIE_PATH = '/test/';
-
-// Cookies host: enter your host (domain name)
-Config::$COOKIE_DOMAIN = 'example.com';
+// make sure you make this call before starting the output or sending HTTP headers
+$nonce = $nonceUtil->create( 'signup-form' );
 ```
 
-3. Let's add the token field to our form:
-```php
-// somewhere before HTML output starts
-$nonce = Nonce::create('signup-form');
-```
+Here you see we used the `signup-form` as an action name and we can use that later to verify the nonce supplied to the user request:
+
+Let's use this in our HTML form:
 
 ```html
 <form method="post">
     ....
     ....
 
-    <input type="hidden" name="nonce" value="<?php echo $nonce; ?>" />
+    <input type="hidden" name="nonce" value="<?php echo htmlentities($nonce); ?>" />
 </form>
 
 ```
 
-To set a custom expiration for the token, pass the number of seconds to the second argument: `Nonce::create('signup-form', 60)`, otherwise `Config::$NONCE_EXPIRE` will be in use.
-
-Now the form should appear something like this on the front-end:
+Now the form should appear something like this on the front-end (i.e with the nonce field added):
 
 ```html
 <form method="post">
@@ -85,50 +59,87 @@ Now the form should appear something like this on the front-end:
 </form>
 ```
 
-To verify the nonce for this form on submission, we can pass the `nonce` hash to the method `Nonce::verify( String $hash, String $action )`:
+To verify the nonce for this form on submission, we can pass the `nonce` hash to the method `$nonceUtil->verify( string $hash, string $action )`:
 
 ```php
-if ( isset( $_POST['nonce'] ) && Nonce::verify( $_POST['nonce'], 'signup-form' ) ) {
+if ( isset( $_POST['nonce'] ) && $nonceUtil->verify( $_POST['nonce'], 'signup-form' ) ) {
     # nonce is valid
 }
 ```
 
 ## Configuration
 
+When initializing the `Nonce\Nonce` class, you're passing the config class as a first argument:
+
 ```php
-Config::$CSRF_EXPIRE = 7200; // 2 hrs
+// nonce configuration class
+$nonceConfig = new \Nonce\Config\Config;
+
+// initialize nonce class
+$nonceUtil = new \Nonce\Nonce( $nonceConfig, new \Nonce\HashStore\Cookie );
+```
+
+You can customize the default configs by calling the `$nonceConfig->setConfig` method or by passing your own config class which implements `Nonce\Config\Base` interface.
+
+```php
+$nonceConfig->setConfig( string $config_name, $config_value );
+```
+
+This allows you to overwrite the default constants of the config class.
+
+For example, to update the cookie settings:
+
+```php
+$nonceConfig->setConfig( 'COOKIE_PATH', '/' );
+$nonceConfig->setConfig( 'COOKIE_DOMAIN', 'example.com' );
+```
+
+### Available config constants:
+
+Remember to use `$nonceConfig->setConfig` to update any of the following config keys:
+
+```php
+// CSRF cookie name
+$nonceConfig::CSRF_COOKIE_NAME = 'CSRF';
+```
+
+The CSRF cookie name.
+
+```php
+// CSRF cookie expiration in seconds
+$nonceConfig::CSRF_COOKIE_TTL = 7200; // 2 hrs
 ```
 
 The number of seconds in which the CSRF token attached to the browser cookie should expire. This token is important and used to generate and verify the hashes, so it is unique per user.
 
 ```php
-static $SALT = '<r*>iVIF`Mcjj&+fkJ4D2,-geI]:-{^|~97.2p:/~+Q?&J_fe2A0i~H?89SeJ:Ztt>';
+$nonceConfig::RANDOM_SALT = 'HI5CTp$94deNBCUqIQx63Z8P$T&^_z`dy';
 ```
 
 Specify a random salt to be used to generate the tokens.
 
 ```php
-static $CHAR_LIMIT = 22;
+$nonceConfig::NONCE_HASH_CHARACTER_LIMIT = 22;
 ```
 
-Enter a character limit here. The return value of `Nonce::create()` then will be X characters long.
+Enter a character limit here. The return value of `$nonceUtil->create(...)` then will be this characters long.
 
 ```php
-static $TOKEN_HASHER = 'sha512';
+$nonceConfig::TOKEN_HASHER_ALGO = 'sha512';
 ```
 
 Which algo should be passed to [`hash`](http://php.net/manual/en/function.hash.php) to generate a token.
 
 ```php
-static $NONCE_EXPIRE = 600; // 10 min
+$nonceConfig::NONCE_DEFAULT_TTL = 600; // 10 min
 ```
 
-How long should the nonce live once generated? the nonces should have a precise lifespan to expire, otherwise you'd be bloating your browser cookies or cache server with hashes.
+How long should the nonce live once generated? the nonces should have a limited lifespan, otherwise you'd be bloating your browser cookies or cache server with redundant hashes.
 
-The expiration is renewed after you request a hash via `Nonce::create()` method, so if a hash is 5 min to expire, the expiration will be reset as we recreate the hash.
+The expiration is renewed after you request a hash via `$nonceUtil->create(...)` method, so if a hash is 5 min to expire, the expiration will be reset as we recreate the hash.
 
 ```php
-static $COOKIE_PATH = '/';
+$nonceConfig::COOKIE_PATH = '/';
 ```
 
 Cookies path, set to a web directory name if you use `Nonce` in a subdirectory project, or `/` if on the root domain.
@@ -136,66 +147,91 @@ Cookies path, set to a web directory name if you use `Nonce` in a subdirectory p
 Note: even if you use a cache driver to store the hashes, the cookie is still required to store the `CSRF` token.
 
 ```php
-static $COOKIE_DOMAIN = '127.0.0.1';
+$nonceConfig::COOKIE_DOMAIN = '127.0.0.1';
 ```
 
 The current domain name (host).
 
 ```php
-static $HASH_NAME_LENGTH = 11;
+$nonceConfig::HASH_ID_CHARACTRER_LIMIT = 11;
 ```
 
 Enter a character limit here. This is important when you are storing hashes via cookies.
 
-The generated hash becomes very long that we actually need to trim it to get only the first XX characters, when you are storing hashes via browser cookies then this will for sure cause a problem (large headers), so we'll try to store tiny hashes instead, and clip the hash as well while verifying the nonces.
+The generated hash becomes long that we actually need to trim it to get only the first few characters for the sake of identification, when you are storing hashes using browser cookies then this would possible result in larger request headers, so we'll try to store tiny hashes instead, and clip the hash as well while verifying the nonces.
+
+## Hash store drivers
+
+The nonces identifier data needs to be stored temporarily to be used for later verification.
+
+### Cookies
+
+A simple temporary storage can be achieved with browser cookies, so you can pass the `\Nonce\HashStore\Cookie` instance as the second argument while initializing the nonce class:
 
 ```php
-static $STORE_CTX_GET = ['Nonce\Cookie', 'get'];
+$nonceUtil = new \Nonce\Nonce( $nonceConfig, new \Nonce\HashStore\Cookie );
 ```
 
-A callable function or method that should retrieve us the hashes.
+Notice that regardless if you use a different store driver, cookies will still be used to persist the CSRF token for the request users.
 
-1. `String $name` - the x (= `Config::$HASH_NAME_LENGTH`) characters long token identifier.
+### Redis
+
+You can also store the hash data temporarily on your Redis server, by passing an instance of `\Nonce\HashStore\Redis` as the second argument while initializing the nonce class:
 
 ```php
-static $STORE_CTX_SET = ['Nonce\Cookie', 'set'];
+// initialize the class passing an instance of Predis as the first argument
+$nonceStore = new \Nonce\HashStore\Redis( new \Predis\Client() );
+
+$nonceUtil = new \Nonce\Nonce( $nonceConfig, $nonceStore );
 ```
 
-A callable function or method that should store us the hashes. The passed arguments are:
+Make sure to pass an instance of [`\Predis\Client`](https://github.com/nrk/predis) while instantiating the `\Nonce\HashStore\Redis` class.
 
-1. `String $name` - the x (= `Config::$HASH_NAME_LENGTH`) characters long token identifier.
-2. `Integer $value` - 1. (simple huh)
-3. `Integer $expires` - the number of seconds that this hash should live.
+### Your Own
 
-
-```php
-static $STORE_CTX_DELETE = ['Nonce\Cookie', 'delete'];
-```
-
-A callable function or method that should delete a given hash from the hash store. The passed arguments are:
-
-1. `String $name` - the x (= `Config::$HASH_NAME_LENGTH`) characters long token identifier.
-
-## Redis Case
-
-You can use Redis to store the hashes as it is super fast and efficient, here's a sample case using [`Predis\Client`](https://github.com/nrk/predis) as a Redis PHP client:
+You can use any other means of temporary data stores, by passing a class which implements the `\Nonce\HashStore\Store` interface:
 
 ```php
-use Nonce\Config;
-use Predis\Client as PredisClient;
+<?php
 
-$redis_client = new PredisClient();
+class CustomStore implements \Nonce\HashStore\Store
+{
+    /**
+      * Store a key temporarily
+      *
+      * @param string $name key to be stored
+      * @param string $value value to be stored for the given key
+      * @param int $expire_seconds expire the data after X seconds (data TTL)
+      * @return bool success/failure
+      */
 
-Config::$STORE_CTX_SET = function($key, $value, $expire) use ($redis_client) {
-    $redis_client->set( $key, $value );
-    $redis_client->expire( $key, $expire );
-};
+    public function setKey( string $name, string $value, int $expire_seconds=0 ) : bool
+    {
+        // ...
+    }
 
-Config::$STORE_CTX_GET = function($key) use ($redis_client) {
-    return $redis_client->get( $key );
-};
+    /**
+      * Get a key from temporary storage
+      *
+      * @param string $name key to be retrieved
+      * @return string value for stored key or empty string on key unavailable
+      */
 
-Config::$STORE_CTX_DELETE = function($key) use ($redis_client) {
-    return $redis_client->del( $key );
-};
+    public function getKey( string $name ) : string
+    {
+        // ...
+    }
+
+    /**
+      * Unset a key from temporary storage
+      *
+      * @param string $name key to be removed
+      * @return bool success/failure
+      */
+
+    public function deleteKey( string $name ) : bool
+    {
+        // ...
+    }
+}
 ```
