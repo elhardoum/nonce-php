@@ -1,12 +1,13 @@
-language: php
-php:
-  - '7.0'
+env:
+  - DOCKER_COMPOSE_VERSION=1.26.0
 
 before_install:
-  - composer self-update
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 install:
-  - composer install
-  - composer --working-dir=./tests install 
+  - docker-compose build
 
-script: cd ./tests && vendor/bin/phpspec run -v --format progress
+script: docker-compose up
