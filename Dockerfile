@@ -12,7 +12,4 @@ RUN composer install
 
 WORKDIR /usr/src/app/tests
 
-# CMD ["sh", "-c", "sleep +inf"]
-# ../vendor/bin/phpspec run -v --format progress
-
-CMD ["../vendor/bin/phpspec", "run", "-v", "--format", "progress"]
+CMD ["sh", "-c", "sleep +inf"]
