@@ -1,4 +1,7 @@
 suites:
-    default:
+    nonce:
         namespace: Nonce
         psr4_prefix: Nonce
+
+    config: Nonce\Config
+    redis: Nonce\HashStore

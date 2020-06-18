@@ -3,7 +3,8 @@
 
  - [ ] update readme
  - [ ] code comments
- - [ ] unit tests: cookie, core, redis
+ - [x] unit tests: cookie, core, redis
+ - [ ] tag 0.2, packagist sync
  
 # Nonce PHP
 

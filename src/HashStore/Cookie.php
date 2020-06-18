@@ -13,7 +13,7 @@ class Cookie implements Store
 
     public function getKey( string $name ) : string
     {
-        return CookieUtil::get( $name );
+        return (string) CookieUtil::get( $name );
     }
 
     public function deleteKey( string $name ) : bool

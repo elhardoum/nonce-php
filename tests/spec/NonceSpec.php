@@ -3,8 +3,6 @@
 namespace spec\Nonce;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Predis\Client as PredisClient;
 
 use Nonce\Nonce;
 use Nonce\Config\Config;
@@ -12,20 +10,74 @@ use Nonce\HashStore\Cookie;
 
 class NonceSpec extends ObjectBehavior
 {
+    private function defaultConstruct()
+    {
+        $this->beConstructedWith(new \Nonce\Config\Config, new \Nonce\HashStore\Cookie);
+    }
+
     function it_is_initializable()
     {
-        $this->beConstructedWith(
-            new \Nonce\Config\Config,
-            new \Nonce\HashStore\Cookie
-        );
+        $this->defaultConstruct();
 
         $this->shouldHaveType(Nonce::class);
     }
 
-    function it_is_configurable()
+    function it_can_test_nonce_creation()
     {
-        $config = new \Nonce\Config\Config;
-        $config->setConfig('CSRF_COOKIE_NAME', 'csrf-token');
-        $config->getConfig('CSRF_COOKIE_NAME')->shouldBe('csrf-token');
+        $this->defaultConstruct();
+
+        $this->create('user-action')->shouldMatch('/^[a-fA-f0-9]+$/');
+    }
+
+    function it_can_test_nonce_verification()
+    {
+        $this->defaultConstruct();
+
+        $this->verify(
+            $this->create('signup-form'),
+            'signup-form'
+        )->shouldBe(true);
+
+        $this->verify(
+            $this->create('download-ebook'),
+            'install-software'
+        )->shouldBe(false);
+    }
+
+    function it_can_test_csrf_cookie()
+    {
+        $this->defaultConstruct();
+
+        $CSRF = $_COOKIE[ (new \Nonce\Config\Config)->getConfig('CSRF_COOKIE_NAME') ] ?? null;
+
+        $this->getOrGenerateUserHashToken()->shouldBe( $CSRF );
+
+        $this->getOrGenerateUserHashToken()->shouldBe( $CSRF );
+    }
+
+    function it_can_test_cookie_store()
+    {
+        $this->defaultConstruct();
+
+        $nonce = $this->create('user-auth');
+
+        $this->trimNonceIdHash( $nonce->getWrappedObject() )->shouldBeInArray(
+            array_keys($_COOKIE)
+        );
+    }
+
+    function it_can_test_random_lib()
+    {
+        $this->defaultConstruct();
+
+        $this->getRandomCharacter(16)->shouldMatch("/^[^\s]{16}$/");
+        $this->getRandomCharacter(20)->shouldMatch("/^[^\s]{20}$/");
+    }
+
+    public function getMatchers(): array
+    {
+        return [
+            'beInArray' => 'in_array',
+        ];
     }
 }

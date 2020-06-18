@@ -6,8 +6,6 @@ RUN apk update && apk add git
 
 RUN git clone https://github.com/elhardoum/nonce-php .
 
-WORKDIR /usr/src/app
-
 RUN composer install
 
 WORKDIR /usr/src/app/tests

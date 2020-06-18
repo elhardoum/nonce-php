@@ -91,7 +91,7 @@ class Nonce
             : substr($hash, 0, $this->config->getConfig('HASH_ID_CHARACTRER_LIMIT'));
     }
 
-    protected function getRandomCharacter(int $length=16) : string
+    public function getRandomCharacter(int $length=16) : string
     {
         $factory = new \RandomLib\Factory;
 

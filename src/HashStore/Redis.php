@@ -23,7 +23,7 @@ class Redis implements Store
 
     public function getKey( string $name ) : string
     {
-        return $this->client->get( $name );
+        return (string) $this->client->get( $name );
     }
 
     public function deleteKey( string $name ) : bool
