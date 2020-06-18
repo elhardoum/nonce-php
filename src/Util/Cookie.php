@@ -1,12 +1,12 @@
 <?php
 
-namespace Nonce;
+namespace Nonce\Util;
 
 /**
   * Fast PHP nonce and CSRF tokens tool
   *
   * @author Samuel Elh <samelh.com/contact>
-  * @version 0.1
+  * @version 0.2
   * @link http://github.com/elhardoum/nonce-php
   * @link https://samelh.com
   * @license GPL-3.0
@@ -14,14 +14,21 @@ namespace Nonce;
   */
 class Cookie
 {
+    private static $config;
+
+    static function loadConfig( \Nonce\Config\Base $config )
+    {
+        self::$config = $config;
+    }
+
     static function set($name, $value, $expires=null)
     {
         setcookie(
             $name,
             $value,
-            $expires ? (time()+$expires) : 0,
-            Config::$COOKIE_PATH,
-            Config::$COOKIE_DOMAIN,
+            $expires > 0 ? ( time() + $expires ) : 0,
+            self::$config->getConfig('COOKIE_PATH'),
+            self::$config->getConfig('COOKIE_DOMAIN'),
             null,
             true
         );
@@ -38,9 +45,9 @@ class Cookie
         setcookie(
             $name,
             ' ',
-            time() -31536000, // -1 yr
-            Config::$COOKIE_PATH,
-            Config::$COOKIE_DOMAIN,
+            time() -31536000, // -1 year
+            self::$config->getConfig('COOKIE_PATH'),
+            self::$config->getConfig('COOKIE_DOMAIN'),
             null,
             true
         );

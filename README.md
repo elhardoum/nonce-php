@@ -1,3 +1,10 @@
+
+## Todo
+
+ - [ ] update readme
+ - [ ] code comments
+ - [ ] unit tests: cookie, core, redis
+ 
 # Nonce PHP
 
 Fast PHP nonce and CSRF tokens tool, add tokens to your web forms and validate nonces easily using browser cookies or a cache driver (or anything else).
@@ -191,7 +198,3 @@ Config::$STORE_CTX_DELETE = function($key) use ($redis_client) {
     return $redis_client->del( $key );
 };
 ```
-
-## Tutorial
-
-You can also read our [tutorial on using PHP Nonce](https://samelh.com/blog/2017/10/31/protect-forms-urls-csrf-attacks-php-nonce-tokens/).

@@ -2,94 +2,102 @@
 
 namespace Nonce;
 
-use RandomLib\Factory as RandomLibFactory;
-use SecurityLib\Strength;
+use Nonce\Config\Base as Config;
+use Nonce\HashStore\Store;
+use Nonce\Util\Cookie as CookieUtil;
 
 /**
   * Fast PHP nonce and CSRF tokens tool
   *
-  * @author Samuel Elh <samelh.com/contact>
-  * @version 0.1
+  * @author Samuel Elh <i@elhardoum.com>
+  * @version 0.2
   * @link http://github.com/elhardoum/nonce-php
   * @link https://samelh.com
   * @license GPL-3.0
   * @see https://github.com/elhardoum/nonce-php/blob/master/readme.md
   */
+
 class Nonce
 {
-    private static $verifying;
+    private $config;
+    private $store;
 
-    private static function token()
+    public function __construct(Config $config, Store $store)
     {
-        if ( $csrf = Cookie::get('CSRF') ) {
-            return $csrf . Config::$SALT;
+        $this->config = $config;
+        $this->store = $store;
+
+        // pass cookie configuration to cookie class
+        CookieUtil::loadConfig( $config );
+    }
+
+    public function getOrGenerateUserHashToken() : string
+    {
+        if ( $csrf = CookieUtil::get( $this->config->getConfig('CSRF_COOKIE_NAME') ) ) {
+            return $csrf . $this->config->getConfig('RANDOM_SALT');
         } else {
-            $csrf = self::randChar(33);
-            Cookie::set('CSRF', $csrf, Config::$CSRF_EXPIRE);
-            return $csrf . Config::$SALT;
+            // generate a random character
+            $csrf = $this->getRandomCharacter(33);
+
+            // store CSRF temporarily in a browser cookie
+            CookieUtil::set($this->config->getConfig('CSRF_COOKIE_NAME'), $csrf, $this->config->getConfig('CSRF_COOKIE_TTL'));
+
+            return $csrf . $this->config->getConfig('RANDOM_SALT');
         }
     }
 
-    static function create($action, $expire=null)
+    public function create(string $action, int $expire_seconds=0, bool $skip_storage=false) : string
     {
-        $hash = self::getHash($action);
+        $hash = $this->encryptUserString($action);
 
-        if ( !self::$verifying && $hash ) {
-            $expire = (int) $expire ? (int) $expire : Config::$NONCE_EXPIRE;
-            HashStore::set(self::name($hash), 1, $expire);
+        if ( ! $skip_storage && $hash ) {
+            $expire = $expire_seconds > 0 ? $expire_seconds : $this->config->getConfig('NONCE_DEFAULT_TTL');
+            $this->store->setKey($this->trimNonceIdHash($hash), 1, $expire);
         }
 
         return $hash;
     }
 
-    private static function getHash($action)
+    protected function encryptUserString(string $value) : string
     {
-        $hash = hash(Config::$TOKEN_HASHER, $action . self::token());
-        return substr($hash, 0, Config::$CHAR_LIMIT);
+        $hash = hash($this->config->getConfig('TOKEN_HASHER_ALGO'), $value . $this->getOrGenerateUserHashToken());
+        return substr($hash, 0, $this->config->getConfig('NONCE_HASH_CHARACTER_LIMIT'));
     }
 
-    static function verify($nonce, $action)
+    public function verify(string $nonce, string $action) : bool
     {
-        self::$verifying = true;
-        $hash = self::create($action);
-        self::$verifying = null;
+        $hash = $this->create( $action, 0, true );
 
-        if ( $hash != $nonce )
+        if ( $hash !== $nonce )
             return false;
 
-        return (bool) HashStore::get(self::name($hash));
+        return (bool) $this->store->getKey($this->trimNonceIdHash($hash));
     }
 
-    static function deleteHash($hash)
+    public function deleteHashFromStore(string $hash)
     {
-        return HashStore::delete(self::name($hash));
+        return $this->store->deleteKey($this->trimNonceIdHash($hash));
     }
 
-    static function delete($action)
+    public function delete(string $action)
     {
-        return self::deleteHash( self::getHash($action) );
+        return $this->deleteHashFromStore( $this->encryptUserString($action) );
     }
 
-    static function instance($user=null)
+    public function trimNonceIdHash(string $hash) : string
     {
-        static $instance = null;
-        
-        if ( null === $instance ) {
-            $instance = new Nonce;
-        }
-
-        return $instance;
+        return $this->config->getConfig('HASH_ID_CHARACTRER_LIMIT') <= 0
+            ? $hash
+            : substr($hash, 0, $this->config->getConfig('HASH_ID_CHARACTRER_LIMIT'));
     }
 
-    static function name($hash)
+    protected function getRandomCharacter(int $length=16) : string
     {
-        return Config::$HASH_NAME_LENGTH <= 0 ? $hash : substr($hash, 0, Config::$HASH_NAME_LENGTH);
-    }
+        $factory = new \RandomLib\Factory;
 
-    private static function randChar($length=16)
-    {
-        $factory = new RandomLibFactory;
-        $generator = $factory->getGenerator(new Strength(Strength::MEDIUM));
+        $generator = $factory->getGenerator(new \SecurityLib\Strength(
+            \SecurityLib\Strength::MEDIUM
+        ));
         
         return $generator->generateString($length);
     }
