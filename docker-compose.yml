@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  php:
+    image: php-tests
+    build:
+      context: .
+
+  cache:
+    image: redis:3.2-alpine
+    command: ["redis-server", "--appendonly", "yes"]
