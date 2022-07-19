@@ -9,10 +9,9 @@ use Nonce\Util\Cookie as CookieUtil;
 /**
   * Fast PHP nonce and CSRF tokens tool
   *
-  * @author Samuel Elh <i@elhardoum.com>
-  * @version 0.2
+  * @author elhardoum <i@elhardoum.com>
+  * @version 0.3
   * @link http://github.com/elhardoum/nonce-php
-  * @link https://samelh.com
   * @license GPL-3.0
   * @see https://github.com/elhardoum/nonce-php/blob/master/readme.md
   */

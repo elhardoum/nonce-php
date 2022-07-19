@@ -5,10 +5,9 @@ namespace Nonce\Util;
 /**
   * Fast PHP nonce and CSRF tokens tool
   *
-  * @author Samuel Elh <samelh.com/contact>
-  * @version 0.2
+  * @author elhardoum <i@elhardoum.com>
+  * @version 0.3
   * @link http://github.com/elhardoum/nonce-php
-  * @link https://samelh.com
   * @license GPL-3.0
   * @see https://github.com/elhardoum/nonce-php/blob/master/readme.md
   */
@@ -24,7 +23,7 @@ class Cookie
       * @return void
       */
 
-    static function loadConfig( \Nonce\Config\Base $config )
+    public static function loadConfig( \Nonce\Config\Base $config )
     {
         self::$config = $config;
     }
@@ -38,7 +37,7 @@ class Cookie
       * @return void
       */
 
-    static function set( string $name, string $value, int $expires=0 )
+    public static function set( string $name, string $value, int $expires=0 )
     {
         setcookie(
             $name,
@@ -46,7 +45,7 @@ class Cookie
             $expires > 0 ? ( time() + $expires ) : 0,
             self::$config->getConfig('COOKIE_PATH'),
             self::$config->getConfig('COOKIE_DOMAIN'),
-            null,
+            false,
             true
         );
         $_COOKIE[$name] = $value;
@@ -59,7 +58,7 @@ class Cookie
       * @return mixed cookie value
       */
 
-    static function get( string $name )
+    public static function get( string $name )
     {
         return isset($_COOKIE[$name]) ? trim($_COOKIE[$name]) : null;  
     }
@@ -71,7 +70,7 @@ class Cookie
       * @return void
       */
 
-    static function delete( string $name )
+    public static function delete( string $name )
     {
         setcookie(
             $name,
@@ -79,7 +78,7 @@ class Cookie
             time() -31536000, // -1 year
             self::$config->getConfig('COOKIE_PATH'),
             self::$config->getConfig('COOKIE_DOMAIN'),
-            null,
+            false,
             true
         );
         unset($_COOKIE[$name]);

@@ -1,0 +1,17 @@
+name: phpspec
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: docker-compose build --no-cache
+    - name: spec
+      run: docker-compose run --rm spec

@@ -99,7 +99,7 @@ $nonceConfig->setConfig( 'COOKIE_DOMAIN', 'example.com' );
 Remember to use `$nonceConfig->setConfig` to update any of the following config keys:
 
 ```php
-// CSRF cookie name
+// CSRF token cookie name
 $nonceConfig::CSRF_COOKIE_NAME = 'CSRF';
 ```
 

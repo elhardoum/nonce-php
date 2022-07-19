@@ -1,4 +1,4 @@
-FROM composer:2.0.0-alpha1
+FROM composer:2.3.9
 
 WORKDIR /usr/src/app
 
@@ -10,4 +10,4 @@ RUN composer install
 
 WORKDIR /usr/src/app/tests
 
-CMD ["sh", "-c", "sleep +inf"]
+CMD ["../vendor/bin/phpspec", "run", "-v", "--format", "progress"]
